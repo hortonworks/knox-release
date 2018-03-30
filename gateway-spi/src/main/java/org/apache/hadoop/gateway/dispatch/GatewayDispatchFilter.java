@@ -19,6 +19,7 @@ package org.apache.hadoop.gateway.dispatch;
 
 import org.apache.hadoop.gateway.SpiGatewayMessages;
 import org.apache.hadoop.gateway.filter.AbstractGatewayFilter;
+import org.apache.hadoop.gateway.config.ConfigurationInjectorBuilder;
 import org.apache.hadoop.gateway.i18n.messages.MessagesFactory;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -29,19 +30,18 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.apache.hadoop.gateway.config.ConfigurationInjectorBuilder.configuration;
-
 public class GatewayDispatchFilter extends AbstractGatewayFilter {
 
-  private static Map<String, Adapter> METHOD_ADAPTERS = createMethodAdapters();
+  private static final Map<String, Adapter> METHOD_ADAPTERS = createMethodAdapters();
 
-  protected static SpiGatewayMessages LOG = MessagesFactory.get(SpiGatewayMessages.class);
+  protected static final SpiGatewayMessages LOG = MessagesFactory.get(SpiGatewayMessages.class);
+
+  private final Object lock = new Object();
 
   private Dispatch dispatch;
 
@@ -61,41 +61,49 @@ public class GatewayDispatchFilter extends AbstractGatewayFilter {
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
     super.init(filterConfig);
-    if (dispatch == null) {
-      String dispatchImpl = filterConfig.getInitParameter("dispatch-impl");
-      dispatch = newInstanceFromName(dispatchImpl);
+    synchronized(lock) {
+      if (dispatch == null) {
+        String dispatchImpl = filterConfig.getInitParameter("dispatch-impl");
+        dispatch = newInstanceFromName(dispatchImpl);
+      }
+      ConfigurationInjectorBuilder.configuration().target(dispatch).source(filterConfig).inject();
+      HttpClientFactory httpClientFactory;
+      String httpClientFactoryClass = filterConfig.getInitParameter("httpClientFactory");
+      if (httpClientFactoryClass != null) {
+        httpClientFactory = newInstanceFromName(httpClientFactoryClass);
+      } else {
+        httpClientFactory = new DefaultHttpClientFactory();
+      }
+      httpClient = httpClientFactory.createHttpClient(filterConfig);
+      dispatch.setHttpClient(httpClient);
+      dispatch.init();
     }
-    configuration().target(dispatch).source(filterConfig).inject();
-    HttpClientFactory httpClientFactory;
-    String httpClientFactoryClass = filterConfig.getInitParameter("httpClientFactory");
-    if (httpClientFactoryClass != null) {
-      httpClientFactory = newInstanceFromName(httpClientFactoryClass);
-    } else {
-      httpClientFactory = new DefaultHttpClientFactory();
-    }
-    httpClient = httpClientFactory.createHttpClient(filterConfig);
-    dispatch.setHttpClient(httpClient);
-    dispatch.init();
   }
 
   @Override
   public void destroy() {
-    dispatch.destroy();
-    try {
-      if (httpClient instanceof  CloseableHttpClient) {
-        ((CloseableHttpClient) httpClient).close();
+    synchronized(lock) {
+      dispatch.destroy();
+      try {
+        if (httpClient instanceof  CloseableHttpClient) {
+          ((CloseableHttpClient) httpClient).close();
+        }
+      } catch ( IOException e ) {
+        LOG.errorClosingHttpClient(e);
       }
-    } catch ( IOException e ) {
-      LOG.errorClosingHttpClient(e);
     }
   }
 
   public Dispatch getDispatch() {
-    return dispatch;
+    synchronized(lock) {
+      return dispatch;
+    }
   }
 
   public void setDispatch(Dispatch dispatch) {
-    this.dispatch = dispatch;
+    synchronized(lock) {
+      this.dispatch = dispatch;
+    }
   }
 
   @Override
@@ -104,7 +112,7 @@ public class GatewayDispatchFilter extends AbstractGatewayFilter {
     Adapter adapter = METHOD_ADAPTERS.get(method);
     if ( adapter != null ) {
       try {
-        adapter.doMethod(dispatch, request, response);
+        adapter.doMethod(getDispatch(), request, response);
       } catch ( URISyntaxException e ) {
         throw new ServletException(e);
       }
