@@ -59,6 +59,7 @@
         <module>gateway-provider-security-webappsec</module>
         <module>gateway-provider-security-preauth</module>
         <module>gateway-provider-security-hadoopauth</module>
+        <module>gateway-provider-security-clientcert</module>
         <module>gateway-provider-security-shiro</module>
         <module>gateway-provider-security-pac4j</module>
         <module>gateway-provider-security-authz-acls</module>
@@ -521,6 +522,11 @@
             <dependency>
                 <groupId>${gateway-group}</groupId>
                 <artifactId>gateway-provider-security-webappsec</artifactId>
+                <version>${gateway-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${gateway-group}</groupId>
+                <artifactId>gateway-provider-security-clientcert</artifactId>
                 <version>${gateway-version}</version>
             </dependency>
             <dependency>
