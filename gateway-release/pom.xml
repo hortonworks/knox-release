@@ -266,6 +266,10 @@
         </dependency>
         <dependency>
             <groupId>${gateway-group}</groupId>
+            <artifactId>gateway-provider-security-clientcert</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${gateway-group}</groupId>
             <artifactId>gateway-provider-security-preauth</artifactId>
         </dependency>
         <dependency>
