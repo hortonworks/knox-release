@@ -5,8 +5,8 @@
   },
   "apps": [
     {
-      "root": "src",
-      "outDir": "dist",
+      "root": "admin-ui",
+      "outDir": "target/classes/admin-ui/app",
       "assets": [
         "assets",
         "favicon.ico"
@@ -18,13 +18,16 @@
       "prefix": "app",
       "mobile": false,
       "styles": [
+        "../node_modules/bootstrap/dist/css/bootstrap.min.css",
         "styles.css"
       ],
       "scripts": [
-		  "../node_modules/ace-builds/src-min/ace.js",
-		  "../node_modules/ace-builds/src-min/theme-monokai.js"
+        "../node_modules/jquery/dist/jquery.min.js",
+        "../node_modules/bootstrap/dist/js/bootstrap.js",
+        "../node_modules/ace-builds/src-min/ace.js",
+        "../node_modules/ace-builds/src-min/theme-monokai.js"
       ],
-	    "environmentSource": "environments/environment.ts",
+      "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",
         "prod": "environments/environment.prod.ts"
