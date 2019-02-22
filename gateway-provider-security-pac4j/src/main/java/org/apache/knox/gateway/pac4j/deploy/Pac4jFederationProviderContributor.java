@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -51,7 +51,7 @@ public class Pac4jFederationProviderContributor extends
   public String getName() {
     return NAME;
   }
-  
+
   @Override
   public void initializeContribution(DeploymentContext context) {
     super.initializeContribution(context);
@@ -66,7 +66,7 @@ public class Pac4jFederationProviderContributor extends
       ResourceDescriptor resource, List<FilterParamDescriptor> params) {
     // blindly add all the provider params as filter init params
     if (params == null) {
-      params = new ArrayList<FilterParamDescriptor>();
+      params = new ArrayList<>();
     }
     Map<String, String> providerParams = provider.getParams();
     for(Entry<String, String> entry : providerParams.entrySet()) {

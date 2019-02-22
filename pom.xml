@@ -134,6 +134,8 @@
         <commons-lang.version>2.6</commons-lang.version>
         <cglib.version>3.2.9</cglib.version>
         <guava.version>28.0-jre</guava.version>
+        <j2e-pac4j.version>4.1.0</j2e-pac4j.version>
+        <pac4j.version>3.8.3</pac4j.version>
         <spring-core.version>5.1.5.RELEASE</spring-core.version>
         <spring-vault.version>2.1.2.RELEASE</spring-vault.version>
         <testcontainers.version>1.10.6</testcontainers.version>
@@ -800,11 +802,19 @@
                 <artifactId>jersey-server</artifactId>
                 <version>2.6</version>
             </dependency>
+
             <dependency>
                 <groupId>com.nimbusds</groupId>
                 <artifactId>nimbus-jose-jwt</artifactId>
                 <version>4.41.2</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>lang-tag</artifactId>
+                <version>1.4.4</version>
+            </dependency>
+
             <dependency>
                 <groupId>net.minidev</groupId>
                 <artifactId>json-smart</artifactId>

@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -19,6 +19,8 @@ package org.apache.knox.gateway.pac4j;
 
 import javax.servlet.http.*;
 
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,6 +73,11 @@ public class MockHttpServletRequest extends HttpServletRequestWrapper {
 
     public void addParameter(String key, String value) {
         parameters.put(key, value);
+    }
+
+    @Override
+    public Enumeration<String> getHeaderNames() {
+        return Collections.enumeration(headers.keySet());
     }
 
     @Override

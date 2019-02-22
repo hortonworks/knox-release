@@ -22,25 +22,34 @@ import org.apache.knox.gateway.i18n.messages.MessagesFactory;
 import org.apache.knox.gateway.pac4j.Pac4jMessages;
 import org.apache.knox.gateway.pac4j.session.KnoxSessionStore;
 import org.apache.knox.gateway.services.GatewayServices;
-import org.apache.knox.gateway.services.security.KeystoreService;
-import org.apache.knox.gateway.services.security.MasterService;
 import org.apache.knox.gateway.services.security.AliasService;
 import org.apache.knox.gateway.services.security.AliasServiceException;
 import org.apache.knox.gateway.services.security.CryptoService;
+import org.apache.knox.gateway.services.security.KeystoreService;
+import org.apache.knox.gateway.services.security.MasterService;
 import org.pac4j.config.client.PropertiesConfigFactory;
+import org.pac4j.config.client.PropertiesConstants;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.session.J2ESessionStore;
 import org.pac4j.core.context.session.SessionStore;
+import org.pac4j.core.http.callback.PathParameterCallbackUrlResolver;
 import org.pac4j.core.util.CommonHelper;
 import org.pac4j.http.client.indirect.IndirectBasicAuthClient;
 import org.pac4j.http.credentials.authenticator.test.SimpleTestUsernamePasswordAuthenticator;
 import org.pac4j.j2e.filter.CallbackFilter;
 import org.pac4j.j2e.filter.SecurityFilter;
+import org.pac4j.oidc.client.AzureAdClient;
+import org.pac4j.saml.client.SAML2Client;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -70,18 +79,26 @@ public class Pac4jDispatcherFilter implements Filter {
 
   public static final String PAC4J_CALLBACK_PARAMETER = "pac4jCallback";
 
+  public static final String PAC4J_OICD_TYPE_AZURE = "azure";
+
+  public static final String URL_PATH_SEPARATOR = "/";
+
   private static final String PAC4J_COOKIE_DOMAIN_SUFFIX_PARAM = "pac4j.cookie.domain.suffix";
 
   private static final String PAC4J_CONFIG = "pac4j.config";
 
   private static final String PAC4J_SESSION_STORE = "pac4j.session.store";
 
+  private static final String PAC4J_CLIENT_NAME_PARAM = "clientName";
+
+  private static final String PAC4J_OIDC_TYPE = "oidc.type";
+
   private CallbackFilter callbackFilter;
 
   private SecurityFilter securityFilter;
-  private MasterService masterService = null;
-  private KeystoreService keystoreService = null;
-  private AliasService aliasService = null;
+  private MasterService masterService;
+  private KeystoreService keystoreService;
+  private AliasService aliasService;
 
   @Override
   public void init( FilterConfig filterConfig ) throws ServletException {
@@ -93,10 +110,10 @@ public class Pac4jDispatcherFilter implements Filter {
       GatewayServices services = (GatewayServices) context.getAttribute(GatewayServices.GATEWAY_SERVICES_ATTRIBUTE);
       clusterName = (String) context.getAttribute(GatewayServices.GATEWAY_CLUSTER_ATTRIBUTE);
       if (services != null) {
-        keystoreService = (KeystoreService) services.getService(GatewayServices.KEYSTORE_SERVICE);
-        cryptoService = (CryptoService) services.getService(GatewayServices.CRYPTO_SERVICE);
-        aliasService = (AliasService) services.getService(GatewayServices.ALIAS_SERVICE);
-        masterService = (MasterService) services.getService(GatewayServices.MASTER_SERVICE);
+        keystoreService = services.getService(GatewayServices.KEYSTORE_SERVICE);
+        cryptoService = services.getService(GatewayServices.CRYPTO_SERVICE);
+        aliasService = services.getService(GatewayServices.ALIAS_SERVICE);
+        masterService = services.getService(GatewayServices.MASTER_SERVICE);
       }
     }
     // crypto service, alias service and cluster name are mandatory
@@ -117,17 +134,30 @@ public class Pac4jDispatcherFilter implements Filter {
       log.ssoAuthenticationProviderUrlRequired();
       throw new ServletException("Required pac4j callback URL is missing.");
     }
-    // add the callback parameter to know it's a callback
-    pac4jCallbackUrl = CommonHelper.addParameter(pac4jCallbackUrl, PAC4J_CALLBACK_PARAMETER, "true");
 
-    final Config config;
-    final String clientName;
     // client name from servlet parameter (mandatory)
-    final String clientNameParameter = filterConfig.getInitParameter("clientName");
+    final String clientNameParameter = filterConfig.getInitParameter(PAC4J_CLIENT_NAME_PARAM);
     if (clientNameParameter == null) {
       log.clientNameParameterRequired();
       throw new ServletException("Required pac4j clientName parameter is missing.");
     }
+
+    final String oidcType = filterConfig.getInitParameter(PAC4J_OIDC_TYPE);
+    /*
+       add the callback parameter to know it's a callback,
+       Azure AD does not honor query param so we add callback param as path element.
+    */
+    if (AzureAdClient.class.getSimpleName().equals(clientNameParameter) || (
+        !StringUtils.isBlank(oidcType) && PAC4J_OICD_TYPE_AZURE
+            .equals(oidcType))) {
+      pac4jCallbackUrl = pac4jCallbackUrl + URL_PATH_SEPARATOR + PAC4J_CALLBACK_PARAMETER;
+    } else {
+      pac4jCallbackUrl = CommonHelper.addParameter(pac4jCallbackUrl, PAC4J_CALLBACK_PARAMETER, "true");
+    }
+
+    final Config config;
+    final String clientName;
+
     if (TEST_BASIC_AUTH.equalsIgnoreCase(clientNameParameter)) {
       // test configuration
       final IndirectBasicAuthClient indirectBasicAuthClient = new IndirectBasicAuthClient(new SimpleTestUsernamePasswordAuthenticator());
@@ -146,7 +176,7 @@ public class Pac4jDispatcherFilter implements Filter {
       final PropertiesConfigFactory propertiesConfigFactory = new PropertiesConfigFactory(pac4jCallbackUrl, properties);
       config = propertiesConfigFactory.build();
       final List<Client> clients = config.getClients().getClients();
-      if (clients == null || clients.size() == 0) {
+      if (clients == null || clients.isEmpty()) {
         log.atLeastOnePac4jClientMustBeDefined();
         throw new ServletException("At least one pac4j client must be defined.");
       }
@@ -155,7 +185,16 @@ public class Pac4jDispatcherFilter implements Filter {
       } else {
         clientName = clientNameParameter;
       }
+
+      /* special handling for Azure AD, use path separators instead of query params */
+      clients.forEach( client -> {
+        if(client.getName().equalsIgnoreCase(AzureAdClient.class.getSimpleName())) {
+          ((AzureAdClient)client).setCallbackUrlResolver(new PathParameterCallbackUrlResolver());
+        }
+      });
+
     }
+
 
     callbackFilter = new CallbackFilter();
     callbackFilter.init(filterConfig);
@@ -181,8 +220,8 @@ public class Pac4jDispatcherFilter implements Filter {
 
   private void addDefaultConfig(String clientNameParameter, Map<String, String> properties) {
     // add default saml params
-    if (clientNameParameter.contains("SAML2Client")) {
-      properties.put(PropertiesConfigFactory.SAML_KEYSTORE_PATH,
+    if (clientNameParameter.contains(SAML2Client.class.getSimpleName())) {
+      properties.put(PropertiesConstants.SAML_KEYSTORE_PATH,
           keystoreService.getKeystorePath());
 
       // check for provisioned alias for keystore password
@@ -196,7 +235,7 @@ public class Pac4jDispatcherFilter implements Filter {
         // no alias provisioned then use the master
         giksp = masterService.getMasterSecret();
       }
-      properties.put(PropertiesConfigFactory.SAML_KEYSTORE_PASSWORD, new String(giksp));
+      properties.put(PropertiesConstants.SAML_KEYSTORE_PASSWORD, new String(giksp));
 
       // check for provisioned alias for private key
       char[] gip = null;
@@ -210,7 +249,7 @@ public class Pac4jDispatcherFilter implements Filter {
         // no alias provisioned then use the master
         gip = masterService.getMasterSecret();
       }
-      properties.put(PropertiesConfigFactory.SAML_PRIVATE_KEY_PASSWORD, new String(gip));
+      properties.put(PropertiesConstants.SAML_PRIVATE_KEY_PASSWORD, new String(gip));
     }
   }
 
@@ -218,12 +257,12 @@ public class Pac4jDispatcherFilter implements Filter {
   public void doFilter( ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
     final HttpServletRequest request = (HttpServletRequest) servletRequest;
-    final HttpServletResponse response = (HttpServletResponse) servletResponse;
     request.setAttribute(PAC4J_CONFIG, securityFilter.getConfig());
-//    final J2EContext context = new J2EContext(request, response, securityFilter.getConfig().getSessionStore());
 
     // it's a callback from an identity provider
-    if (request.getParameter(PAC4J_CALLBACK_PARAMETER) != null) {
+    if (request.getParameter(PAC4J_CALLBACK_PARAMETER) != null || (
+        request.getContextPath() != null && request.getRequestURI()
+            .contains(PAC4J_CALLBACK_PARAMETER))) {
       // apply CallbackFilter
       callbackFilter.doFilter(servletRequest, servletResponse, filterChain);
     } else {

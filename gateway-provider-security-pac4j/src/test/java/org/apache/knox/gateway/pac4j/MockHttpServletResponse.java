@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -21,7 +21,6 @@ package org.apache.knox.gateway.pac4j;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,8 +32,7 @@ import static org.mockito.Mockito.*;
 public class MockHttpServletResponse extends HttpServletResponseWrapper {
 
     private List<Cookie> cookies = new ArrayList<>();
-    private String location;
-    private int status = 0;
+    private int status;
     private Map<String, String> headers = new HashMap<>();
 
     public MockHttpServletResponse() {

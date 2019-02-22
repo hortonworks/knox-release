@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -17,7 +17,12 @@
  */
 package org.apache.knox.gateway.pac4j.filter;
 
-import org.apache.knox.gateway.audit.api.*;
+import org.apache.knox.gateway.audit.api.Action;
+import org.apache.knox.gateway.audit.api.ActionOutcome;
+import org.apache.knox.gateway.audit.api.AuditService;
+import org.apache.knox.gateway.audit.api.AuditServiceFactory;
+import org.apache.knox.gateway.audit.api.Auditor;
+import org.apache.knox.gateway.audit.api.ResourceType;
 import org.apache.knox.gateway.audit.log4j.audit.AuditConstants;
 import org.apache.knox.gateway.filter.AbstractGatewayFilter;
 import org.apache.knox.gateway.security.PrimaryPrincipal;
@@ -68,9 +73,11 @@ public class Pac4jIdentityAdapter implements Filter {
     idAttribute = filterConfig.getInitParameter(PAC4J_ID_ATTRIBUTE);
   }
 
+  @Override
   public void destroy() {
   }
 
+  @Override
   public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
       throws IOException, ServletException {
 
@@ -78,7 +85,7 @@ public class Pac4jIdentityAdapter implements Filter {
     final HttpServletResponse response = (HttpServletResponse) servletResponse;
     final J2EContext context = new J2EContext(request, response,
         ((Config)request.getAttribute(PAC4J_CONFIG)).getSessionStore());
-    final ProfileManager<CommonProfile> manager = new ProfileManager<CommonProfile>(context);
+    final ProfileManager<CommonProfile> manager = new ProfileManager<>(context);
     final Optional<CommonProfile> optional = manager.get(true);
     if (optional.isPresent()) {
       CommonProfile profile = optional.get();
@@ -117,6 +124,7 @@ public class Pac4jIdentityAdapter implements Filter {
       Subject.doAs(
           subject,
           new PrivilegedExceptionAction<Object>() {
+            @Override
             public Object run() throws Exception {
               chain.doFilter(request, response);
               return null;
@@ -140,6 +148,7 @@ public class Pac4jIdentityAdapter implements Filter {
 
   /**
    * For tests only.
+   * @param auditService AuditService to set
    */
   public static void setAuditService(AuditService auditService) {
     Pac4jIdentityAdapter.auditService = auditService;
@@ -147,6 +156,7 @@ public class Pac4jIdentityAdapter implements Filter {
 
   /**
    * For tests only.
+   * @param auditor Auditor to set
    */
   public static void setAuditor(Auditor auditor) {
     Pac4jIdentityAdapter.auditor = auditor;
@@ -154,7 +164,8 @@ public class Pac4jIdentityAdapter implements Filter {
 
   /**
    * For tests only.
-     */
+   * @return testIdentifier
+   */
   public String getTestIdentifier() {
     return testIdentifier;
   }
