@@ -174,4 +174,4 @@ Bugs:
     KNOX-1177 - Retighten the rewrite rule on oozieui to reduce false positives
     KNOX-1108 - NiFiHaDispatch not failing over (Jeff Storck via lmccay)
     KNOX-1040 - Fixed refresh after descriptor saving, and added editable discovery fields to descriptor detail view
-
+    KNOX-1828 - Fix Websocket Message Size (#75)
