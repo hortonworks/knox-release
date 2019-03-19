@@ -26,15 +26,10 @@ import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
 import javax.websocket.WebSocketContainer;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
-import org.eclipse.jetty.websocket.server.WebSocketHandler;
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
-import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
-import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -78,12 +73,11 @@ public class MessageFailureTest {
 
   /**
    * Test for a message that bigger than configured value
-   * @throws IOException
-   * @throws Exception
+   * @throws Exception exception on failure
    */
   @Test(timeout = 8000)
-  public void testMessageTooBig() throws IOException, Exception {
-    final String bigMessage = "Echooooooooooooo";
+  public void testMessageTooBig() throws Exception {
+    final String bigMessage = RandomStringUtils.randomAscii(66001);
 
     WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 
@@ -101,6 +95,28 @@ public class MessageFailureTest {
   
 
   /**
+   * Test for a message that bigger than Jetty default but smaller than limit
+   * @throws Exception exception on failure
+   */
+  @Test(timeout = 8000)
+  public void testMessageBiggerThanDefault() throws Exception {
+    final String bigMessage = RandomStringUtils.randomAscii(66000);
+
+    WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+
+    WebsocketClient client = new WebsocketClient();
+    javax.websocket.Session session = container.connectToServer(client,
+            proxyUri);
+    session.getBasicRemote().sendText(bigMessage);
+
+    client.awaitClose(CloseReason.CloseCodes.TOO_BIG.getCode(), 1000,
+            TimeUnit.MILLISECONDS);
+
+    Assert.assertThat(client.close.getCloseCode().getCode(), CoreMatchers.is(CloseReason.CloseCodes.TOO_BIG.getCode()));
+
+  }
+
+  /*
    * Test for a message within limit.
    * @throws IOException
    * @throws Exception
@@ -174,34 +190,4 @@ public class MessageFailureTest {
     proxyUri = new URI(String.format("ws://%s:%d/", host, port));
     
   }
-
-}
-
-/**
- * A Mock websocket handler that just Echos messages
- *
- */
-class BigEchoSocketHandler extends WebSocketHandler
-    implements WebSocketCreator {
-
-  // final EchoSocket socket = new EchoSocket();
-  final WebSocketAdapter socket;
-
-  public BigEchoSocketHandler(final WebSocketAdapter socket) {
-    this.socket = socket;
-  }
-
-  @Override
-  public void configure(WebSocketServletFactory factory) {
-    factory.getPolicy().setMaxTextMessageSize(10);
-    factory.getPolicy().setMaxBinaryMessageSize(10);
-    factory.setCreator(this);
-  }
-
-  @Override
-  public Object createWebSocket(ServletUpgradeRequest req,
-      ServletUpgradeResponse resp) {
-    return socket;
-  }
-
 }
