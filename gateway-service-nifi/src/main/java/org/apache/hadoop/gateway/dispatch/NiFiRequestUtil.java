@@ -22,15 +22,14 @@ import java.io.IOException;
 import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.gateway.security.SubjectUtils;
 import org.apache.http.Header;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.log4j.Logger;
-
-import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 
 class NiFiRequestUtil {
 
@@ -76,7 +75,7 @@ class NiFiRequestUtil {
     // as empty angle brackets "<>".
     final Subject subject = SubjectUtils.getCurrentSubject();
     String effectivePrincipalName = SubjectUtils.getEffectivePrincipalName(subject);
-    outboundRequest.setHeader(NiFiHeaders.X_PROXIED_ENTITIES_CHAIN, Objects.firstNonNull(inboundRequest.getHeader(NiFiHeaders.X_PROXIED_ENTITIES_CHAIN), "") +
+    outboundRequest.setHeader(NiFiHeaders.X_PROXIED_ENTITIES_CHAIN, MoreObjects.firstNonNull(inboundRequest.getHeader(NiFiHeaders.X_PROXIED_ENTITIES_CHAIN), "") +
         String.format("<%s>", effectivePrincipalName.equalsIgnoreCase("anonymous") ? "" : effectivePrincipalName));
 
     // Make sure headers named "Cookie" are removed from the request to NiFi, since NiFi does not use cookies.
