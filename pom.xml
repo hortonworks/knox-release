@@ -119,6 +119,7 @@
         <shiro.version>1.2.6</shiro.version>
         <guava.version>24.1.1-jre</guava.version>
         <spring-core.version>4.3.22.RELEASE</spring-core.version>
+        <curator.version>2.13.0</curator.version>
     </properties>
 
     <licenses>
@@ -1110,18 +1111,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.kohsuke</groupId>
-                <artifactId>libpam4j</artifactId>
-                <version>1.8</version>
-            </dependency>
-
-            <dependency>
-                <groupId>net.java.dev.jna</groupId>
-                <artifactId>jna</artifactId>
-                <version>4.1.0</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.apache.zookeeper</groupId>
                 <artifactId>zookeeper</artifactId>
                 <version>${zookeeper-version}</version>
@@ -1129,7 +1118,17 @@
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-framework</artifactId>
-                <version>2.13.0</version>
+                <version>${curator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-recipes</artifactId>
+                <version>${curator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-client</artifactId>
+                <version>${curator.version}</version>
             </dependency>
 
             <!-- Html pull parser.  EPLv1 license -->
@@ -1332,7 +1331,7 @@
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-test</artifactId>
-                <version>2.13.0</version>
+                <version>${curator.version}</version>
                 <scope>test</scope>
             </dependency>
 

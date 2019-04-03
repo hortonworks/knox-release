@@ -22,15 +22,11 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.hadoop.gateway.ha.provider.HaServiceConfig;
-import org.apache.hadoop.gateway.ha.provider.URLManager;
-import org.apache.hadoop.gateway.ha.provider.URLManagerLoader;
 import org.apache.hadoop.gateway.ha.provider.impl.i18n.HaMessages;
 import org.apache.hadoop.gateway.i18n.messages.MessagesFactory;
 
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class AtlasZookeeperURLManager extends DefaultURLManager {
 
