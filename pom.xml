@@ -120,6 +120,7 @@
         <guava.version>24.1.1-jre</guava.version>
         <spring-core.version>4.3.22.RELEASE</spring-core.version>
         <curator.version>2.13.0</curator.version>
+        <bcprov-jdk15on.version>1.61</bcprov-jdk15on.version>
     </properties>
 
     <licenses>
@@ -714,13 +715,6 @@
               <groupId>com.nimbusds</groupId>
               <artifactId>nimbus-jose-jwt</artifactId>
               <version>4.41.2</version>
-              <scope>compile</scope>
-              <exclusions>
-                <exclusion>
-                  <groupId>org.bouncycastle</groupId>
-                  <artifactId>bcprov-jdk15on</artifactId>
-                </exclusion>
-              </exclusions>
             </dependency>
             <!-- Transitive dependency for nimbus-jose-jwt.
             Please re-check this version when updating nimbus-jose-jwt.
@@ -1148,6 +1142,13 @@
                 <artifactId>gateway-demo-ldap-launcher</artifactId>
                 <version>${gateway-version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>${bcprov-jdk15on.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>net.lingala.zip4j</groupId>
                 <artifactId>zip4j</artifactId>
