@@ -117,6 +117,7 @@
         <javax-websocket-version>1.1</javax-websocket-version>
         <metrics-version>3.1.2</metrics-version>
         <shiro.version>1.2.6</shiro.version>
+        <guava.version>24.1.1-jre</guava.version>
         <spring-core.version>4.3.22.RELEASE</spring-core.version>
         <bcprov-jdk15on.version>1.61</bcprov-jdk15on.version>
     </properties>
@@ -844,12 +845,6 @@
                 <artifactId>hadoop-common</artifactId>
                 <version>${hadoop-version}</version>
                 <exclusions>
-                    <!--
-                    <exclusion>
-                        <groupId>com.google.guava</groupId>
-                        <artifactId>guava</artifactId>
-                    </exclusion>
-                    -->
                     <exclusion>
                         <groupId>com.google.protobuf</groupId>
                         <artifactId>protobuf-java</artifactId>
@@ -1079,6 +1074,12 @@
             </dependency>
 
             <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.apache.shiro</groupId>
                 <artifactId>shiro-web</artifactId>
                 <version>${shiro.version}</version>
@@ -1122,7 +1123,7 @@
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-framework</artifactId>
-                <version>2.6.0</version>
+                <version>2.13.0</version>
             </dependency>
 
             <!-- Html pull parser.  EPLv1 license -->
@@ -1332,7 +1333,7 @@
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-test</artifactId>
-                <version>2.6.0</version>
+                <version>2.13.0</version>
                 <scope>test</scope>
             </dependency>
 

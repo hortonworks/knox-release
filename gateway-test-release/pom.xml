@@ -109,6 +109,7 @@
             <artifactId>commons-logging</artifactId>
             <version>1.2</version>
         </dependency>
+        <!-- This needs to match Hadoop guava version for testing -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
