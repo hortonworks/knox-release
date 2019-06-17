@@ -24,7 +24,7 @@
     </parent>
     <groupId>org.apache.knox</groupId>
     <artifactId>gateway</artifactId>
-    <version>0.12.0.2.6.1.0-SNAPSHOT</version>
+    <version>0.12.0.2.6.1.136-2</version>
     <packaging>pom</packaging>
 
     <name>gateway</name>
@@ -103,10 +103,10 @@
         <gateway-name>Apache Knox</gateway-name>
         <gateway-project>knox</gateway-project>
         <gateway-artifact>knox</gateway-artifact>
-        <gateway-version>0.12.0.2.6.1.0-SNAPSHOT</gateway-version>
+        <gateway-version>0.12.0.2.6.1.136-2</gateway-version>
         <gateway-group>org.apache.knox</gateway-group>
         <groovy-version>2.4.6</groovy-version>
-        <hadoop-version>2.7.3.2.6.1.0-SNAPSHOT</hadoop-version>
+        <hadoop-version>2.7.3.2.6.1.136-2</hadoop-version>
         <jetty-version>9.2.15.v20160210</jetty-version>
         <surefire-version>2.16</surefire-version>
         <failsafe-version>2.19.1</failsafe-version>
@@ -307,7 +307,7 @@
                         org.apache.hadoop.test.category.SlowTests,org.apache.hadoop.test.category.ManualTests,org.apache.hadoop.test.category.VerifyTest,org.apache.hadoop.test.category.ReleaseTest
                     </excludedGroups>
                     <systemPropertyVariables>
-                        <gateway-version>0.12.0.2.6.1.0-SNAPSHOT</gateway-version>
+                        <gateway-version>0.12.0.2.6.1.136-2</gateway-version>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
