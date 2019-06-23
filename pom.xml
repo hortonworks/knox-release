@@ -129,6 +129,7 @@
         <metrics-version>3.1.2</metrics-version>
         <shiro.version>1.2.6</shiro.version>
         <asm.version>7.0</asm.version>
+        <bouncycastle.version>1.62</bouncycastle.version>
         <commons-beanutils-version>1.9.3</commons-beanutils-version>
         <commons-compress.version>1.18</commons-compress.version>
         <commons-lang.version>2.6</commons-lang.version>
@@ -137,7 +138,6 @@
         <spring-core.version>5.1.5.RELEASE</spring-core.version>
         <spring-vault.version>2.1.2.RELEASE</spring-vault.version>
         <testcontainers.version>1.10.6</testcontainers.version>
-        <bouncycastle.version>1.61</bouncycastle.version>
     </properties>
 
     <licenses>
