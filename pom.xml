@@ -134,7 +134,7 @@
         <commons-compress.version>1.18</commons-compress.version>
         <commons-lang.version>2.6</commons-lang.version>
         <cglib.version>3.2.9</cglib.version>
-        <guava.version>27.0-jre</guava.version>
+        <guava.version>28.0-jre</guava.version>
         <spring-core.version>5.1.5.RELEASE</spring-core.version>
         <spring-vault.version>2.1.2.RELEASE</spring-vault.version>
         <testcontainers.version>1.10.6</testcontainers.version>
