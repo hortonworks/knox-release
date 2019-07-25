@@ -20,7 +20,7 @@
     <parent>
         <artifactId>gateway</artifactId>
         <groupId>org.apache.knox</groupId>
-        <version>0.12.0.2.6.3.0-SNAPSHOT</version>
+        <version>0.12.0.2.6.4.145-3</version>
     </parent>
 
     <artifactId>gateway-test</artifactId>
@@ -159,7 +159,7 @@
                     <forkCount>1</forkCount>
                     <reuseForks>false</reuseForks>
                     <systemPropertyVariables>
-                        <gateway-version>0.12.0.2.6.3.0-SNAPSHOT</gateway-version>
+                        <gateway-version>0.12.0.2.6.4.145-3</gateway-version>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
