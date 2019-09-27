@@ -130,7 +130,7 @@
         <shiro.version>1.2.6</shiro.version>
         <asm.version>7.0</asm.version>
         <bouncycastle.version>1.62</bouncycastle.version>
-        <commons-beanutils-version>1.9.3</commons-beanutils-version>
+        <commons-beanutils-version>1.9.4</commons-beanutils-version>
         <commons-compress.version>1.18</commons-compress.version>
         <commons-lang.version>2.6</commons-lang.version>
         <cglib.version>3.2.9</cglib.version>
