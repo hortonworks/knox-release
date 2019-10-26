@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.knox</groupId>
         <artifactId>gateway</artifactId>
-        <version>0.12.0.2.6.3.0-SNAPSHOT</version>
+        <version>0.12.0.2.6.4.164-5</version>
     </parent>
     <artifactId>gateway-provider-identity-assertion-hadoop-groups</artifactId>
 
