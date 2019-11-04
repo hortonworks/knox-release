@@ -21,6 +21,12 @@
     <rule dir="IN" name="RANGER/ranger/inbound/plugins" pattern="*://*:*/**/ranger/service/plugins/{path=**}?{**}">
         <rewrite template="{$serviceUrl[RANGER]}/service/plugins/{path=**}?{**}"/>
     </rule>
+    <rule dir="IN" name="RANGER/ranger/inbound/xusers/path" pattern="*://*:*/**/ranger/service/xusers/{path=**}?{**}">
+        <rewrite template="{$serviceUrl[RANGER]}/service/xusers/{path=**}?{**}"/>
+    </rule>
+    <rule dir="IN" name="RANGER/ranger/inbound/assets/path" pattern="*://*:*/**/ranger/service/assets/{path=**}?{**}">
+        <rewrite template="{$serviceUrl[RANGER]}/service/assets/{path=**}?{**}"/>
+    </rule>
     <rule dir="IN" name="RANGER/ranger/inbound/healthcheck" pattern="*://*:*/**/ranger">
         <rewrite template="{$serviceUrl[RANGER]}"/>
     </rule>
