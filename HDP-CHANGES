@@ -1,3 +1,12 @@
+--------------------
+HDP-3.1.5 Changes
+--------------------
+KNOX-1963 - Ranger API service should proxy xusers/users and and xusers/groups
+KNOX-1994 - Update Ranger API service definition to allow separate URL patterns
+KNOX-2073 - Overlapping dependencies - commons bean utils 1.9.x vs 1.8.x
+KNOX-2050 - Upgrade jackson to 2.10.0
+KNOX-2033 - Upgrade commons-beanutils to 1.9.4
+--------------------
 Changes only in Hortonworks github and not in the released Knox v1.0.0 and hence not covered by CHANGES.txt.
 
 New Features:
