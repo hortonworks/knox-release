@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.knox</groupId>
         <artifactId>gateway</artifactId>
-        <version>0.12.0.2.6.5.0-SNAPSHOT</version>
+        <version>0.12.0.2.6.5.209-1</version>
     </parent>
     <artifactId>gateway-i18n-logging-log4j</artifactId>
 
