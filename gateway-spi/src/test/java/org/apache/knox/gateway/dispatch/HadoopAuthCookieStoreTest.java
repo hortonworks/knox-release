@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -17,18 +17,23 @@
  */
 package org.apache.knox.gateway.dispatch;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.List;
-
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.knox.gateway.config.GatewayConfig;
 import org.easymock.EasyMock;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class HadoopAuthCookieStoreTest {
 
@@ -87,7 +92,7 @@ public class HadoopAuthCookieStoreTest {
 
   @Test
   public void testKnoxCookieInclusionDefaultUser() {
-    doTestKnoxCookieExclusion("u=knox&p=anotherUser/myhost.example.com@EXAMPLE.COM&t=kerberos&e=1517900515610&s=HpSXUOhoXR/2wXrsgPz5lSbNuf8=");
+    doTestKnoxCookieInclusion("u=knox&p=anotherUser/myhost.example.com@EXAMPLE.COM&t=kerberos&e=1517900515610&s=HpSXUOhoXR/2wXrsgPz5lSbNuf8=");
   }
 
   @Test
@@ -121,7 +126,7 @@ public class HadoopAuthCookieStoreTest {
 
   @Test
   public void testKnoxCookieInclusionDefaultUserAndMissingPrincipal() {
-    doTestKnoxCookieExclusion("u=knox&t=kerberos&e=1517900515610&s=HpSXUOhoXR/2wXrsgPz5lSbNuf8=");
+    doTestKnoxCookieInclusion("u=knox&t=kerberos&e=1517900515610&s=HpSXUOhoXR/2wXrsgPz5lSbNuf8=");
   }
 
   private void doTestKnoxCookieInclusion(final String cookieValue) {
@@ -162,10 +167,11 @@ public class HadoopAuthCookieStoreTest {
     File result = null;
     try {
       File f = File.createTempFile(filename, ".conf");
-      FileOutputStream out = new FileOutputStream(f);
-      out.write(contents.getBytes());
-      out.flush();
-      out.close();
+      f.deleteOnExit();
+      try(OutputStream out = Files.newOutputStream(f.toPath())) {
+        out.write(contents.getBytes(StandardCharsets.UTF_8));
+        out.flush();
+      }
       result = f;
     } catch (Exception e) {
       //
@@ -189,5 +195,4 @@ public class HadoopAuthCookieStoreTest {
            "storeKey=true\n" +
            "useTicketCache=false;";
   }
-
 }
