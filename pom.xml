@@ -15,9 +15,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache</groupId>
@@ -26,7 +24,7 @@
     </parent>
     <groupId>org.apache.knox</groupId>
     <artifactId>gateway</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.0.0.3.1.0.302-2</version>
     <packaging>pom</packaging>
 
     <name>gateway</name>
@@ -114,10 +112,10 @@
         <gateway-name>Apache Knox</gateway-name>
         <gateway-project>knox</gateway-project>
         <gateway-artifact>knox</gateway-artifact>
-        <gateway-version>1.2.0-SNAPSHOT</gateway-version>
+        <gateway-version>1.0.0.3.1.0.302-2</gateway-version>
         <gateway-group>org.apache.knox</gateway-group>
         <groovy-version>2.4.8</groovy-version>
-        <hadoop-version>3.0.0</hadoop-version>
+        <hadoop-version>3.1.1.3.1.0.302-2</hadoop-version>
         <jackson.version>2.9.8</jackson.version>
         <jetty-version>9.4.12.v20180830</jetty-version>
         <mockito-version>1.10.19</mockito-version>
@@ -337,7 +335,7 @@
                         org.apache.knox.test.category.SlowTests,org.apache.knox.test.category.ManualTests,org.apache.knox.test.category.VerifyTest,org.apache.knox.test.category.ReleaseTest
                     </excludedGroups>
                     <systemPropertyVariables>
-                        <gateway-version>${gateway-version}</gateway-version>
+                        <gateway-version>1.0.0.3.1.0.302-2</gateway-version>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -430,7 +428,7 @@
                     <formats>
                         <format>html</format>
                     </formats>
-                    <check/>
+                    <check />
                 </configuration>
             </plugin>
             <plugin>
